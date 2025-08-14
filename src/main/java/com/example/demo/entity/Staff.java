@@ -1,42 +1,55 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "staff")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "name", nullable = false)
     private String name;
+    
+    @Column(name = "email", unique = true)
     private String email;
+    
+    @Column(name = "position")
     private String position;
+    
+    @Column(name = "phone")
     private String phone;
     
-    // Constructors
-    public Staff() {}
+    @Column(name = "salary", precision = 10, scale = 2)
+    private BigDecimal salary;
     
-    public Staff(String name, String email, String position, String phone) {
-        this.name = name;
-        this.email = email;
-        this.position = position;
-        this.phone = phone;
+    @Column(name = "hire_date")
+    @Builder.Default
+    private LocalDate hireDate = LocalDate.now();
+    
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+    
+    @Column(name = "created_at")
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "updated_at")
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+    
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    
-    public String getPosition() { return position; }
-    public void setPosition(String position) { this.position = position; }
-    
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
 }

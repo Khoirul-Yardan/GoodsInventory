@@ -1,65 +1,95 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goods")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = {"color"}) // Prevent circular references
 public class Goods {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "name", nullable = false)
     private String name;
+    
+    @Column(name = "description")
     private String description;
-    private Integer quantity;
-    private Double price;
     
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "quantity")
+    @Builder.Default
+    private Integer quantity = 0;
     
-    @ManyToOne
-    @JoinColumn(name = "storage_id")
-    private Storage storage;
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
     
-    private String sku; // Stock Keeping Unit
-    private Integer minStock; // Minimum stock level
+    @Column(name = "category")
+    private String category;
     
-    // Constructors
-    public Goods() {}
+    @Column(name = "sku", unique = true)
+    private String sku;
     
-    public Goods(String name, String description, Integer quantity, Double price) {
-        this.name = name;
-        this.description = description;
-        this.quantity = quantity;
-        this.price = price;
+    @Column(name = "barcode")
+    private String barcode;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
+    private Color color;
+    
+    @Column(name = "size")
+    private String size;
+    
+    @Column(name = "weight")
+    private Double weight;
+    
+    @Column(name = "dimensions")
+    private String dimensions;
+    
+    @Column(name = "material")
+    private String material;
+    
+    @Column(name = "brand")
+    private String brand;
+    
+    @Column(name = "model")
+    private String model;
+    
+    @Column(name = "supplier")
+    private String supplier;
+    
+    @Column(name = "min_stock_level")
+    @Builder.Default
+    private Integer minStockLevel = 10;
+    
+    @Column(name = "max_stock_level")
+    @Builder.Default
+    private Integer maxStockLevel = 1000;
+    
+    @Column(name = "unit")
+    @Builder.Default
+    private String unit = "pcs";
+    
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+    
+    @Column(name = "created_at")
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "updated_at")
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+    
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
-    
-    public Category getCategory() { return category; }
-    public void setCategory(Category category) { this.category = category; }
-    
-    public Storage getStorage() { return storage; }
-    public void setStorage(Storage storage) { this.storage = storage; }
-    
-    public String getSku() { return sku; }
-    public void setSku(String sku) { this.sku = sku; }
-    
-    public Integer getMinStock() { return minStock; }
-    public void setMinStock(Integer minStock) { this.minStock = minStock; }
 }

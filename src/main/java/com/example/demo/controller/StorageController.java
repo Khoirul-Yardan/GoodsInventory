@@ -3,13 +3,14 @@ package com.example.demo.controller;
 import com.example.demo.entity.Storage;
 import com.example.demo.repository.StorageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/storage")
+@RequestMapping("/api/Storage")
 @CrossOrigin(origins = "*")
 public class StorageController {
     
@@ -22,8 +23,9 @@ public class StorageController {
     }
     
     @GetMapping("/{id}")
-    public Optional<Storage> getStorageById(@PathVariable Long id) {
-        return storageRepository.findById(id);
+    public ResponseEntity<Storage> getStorageById(@PathVariable Long id) {
+        Optional<Storage> storage = storageRepository.findById(id);
+        return storage.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
@@ -32,21 +34,36 @@ public class StorageController {
     }
     
     @PutMapping("/{id}")
-    public Storage updateStorage(@PathVariable Long id, @RequestBody Storage storageDetails) {
+    public ResponseEntity<Storage> updateStorage(@PathVariable Long id, @RequestBody Storage storageDetails) {
         Optional<Storage> optionalStorage = storageRepository.findById(id);
         if (optionalStorage.isPresent()) {
             Storage storage = optionalStorage.get();
             storage.setName(storageDetails.getName());
             storage.setLocation(storageDetails.getLocation());
-            storage.setDescription(storageDetails.getDescription());
             storage.setCapacity(storageDetails.getCapacity());
-            return storageRepository.save(storage);
+            storage.setCurrentStock(storageDetails.getCurrentStock());
+            return ResponseEntity.ok(storageRepository.save(storage));
         }
-        return null;
+        return ResponseEntity.notFound().build();
     }
     
     @DeleteMapping("/{id}")
-    public void deleteStorage(@PathVariable Long id) {
-        storageRepository.deleteById(id);
+    public ResponseEntity<Void> deleteStorage(@PathVariable Long id) {
+        if (storageRepository.existsById(id)) {
+            storageRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    // Additional endpoints
+    @GetMapping("/capacity")
+    public List<Storage> getStorageByCapacity(@RequestParam Integer minCapacity) {
+        return storageRepository.findByCapacityGreaterThanEqual(minCapacity);
+    }
+    
+    @GetMapping("/search")
+    public List<Storage> searchStorage(@RequestParam String name) {
+        return storageRepository.findByNameContainingIgnoreCase(name);
     }
 }

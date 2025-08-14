@@ -1,31 +1,42 @@
 package com.example.demo.dto;
 
+import lombok.*;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class GoodsInputDTO {
     private Long goodsId;
+    private String goodsName;
     private Integer quantity;
+    private Double unitPrice;
+    private Double totalPrice;
     private String supplier;
+    private String supplierInvoice;
+    private String batchNumber;
+    private LocalDate expiryDate;
     private String notes;
+    @Builder.Default
+    private String status = "pending";
+    @Builder.Default
+    private String urgency = "normal";
+    private String color;
+    @Builder.Default
+    private LocalDateTime inputDate = LocalDateTime.now();
+    private Long staffId;
+    private String staffName;
     
-    // Constructors
-    public GoodsInputDTO() {}
-    
-    public GoodsInputDTO(Long goodsId, Integer quantity, String supplier, String notes) {
-        this.goodsId = goodsId;
-        this.quantity = quantity;
-        this.supplier = supplier;
-        this.notes = notes;
+    // Custom method to get status color
+    public String getStatusColor() {
+        return switch (this.status != null ? this.status.toLowerCase() : "pending") {
+            case "pending" -> "#ffc107";
+            case "received" -> "#17a2b8";
+            case "verified" -> "#20c997";
+            case "stored" -> "#28a745";
+            default -> "#6c757d";
+        };
     }
-    
-    // Getters and Setters
-    public Long getGoodsId() { return goodsId; }
-    public void setGoodsId(Long goodsId) { this.goodsId = goodsId; }
-    
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    
-    public String getSupplier() { return supplier; }
-    public void setSupplier(String supplier) { this.supplier = supplier; }
-    
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
 }

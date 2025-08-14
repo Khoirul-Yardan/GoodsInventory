@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS goods CASCADE;
 DROP TABLE IF EXISTS staff CASCADE;
 DROP TABLE IF EXISTS storage CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS color CASCADE;
 
 -- Create Category table
 CREATE TABLE category (
@@ -43,6 +44,19 @@ CREATE TABLE staff (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create Color table
+CREATE TABLE color (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    hex_code VARCHAR(7) NOT NULL,
+    rgb_code VARCHAR(20),
+    color_family VARCHAR(50),
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create Goods table
 CREATE TABLE goods (
     id BIGSERIAL PRIMARY KEY,
@@ -61,7 +75,13 @@ CREATE TABLE goods (
     supplier VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    color_id BIGINT,
+    size VARCHAR(20),
+    material VARCHAR(100),
+    brand VARCHAR(100),
+    model VARCHAR(100),
+    FOREIGN KEY (color_id) REFERENCES color(id)
 );
 
 -- Create Goods Input table (Incoming stock)
@@ -225,3 +245,8 @@ WHERE is_active = true;
 -- Display summary
 SELECT 'Database setup completed successfully!' as status;
 SELECT * FROM inventory_summary;
+
+-- Update some goods to have colors
+UPDATE goods SET color_id = 1, size = 'Universal', brand = 'Dell', material = 'Plastic/Metal' WHERE name LIKE '%Laptop%';
+UPDATE goods SET color_id = 2, size = 'Standard', brand = 'Apple', material = 'Glass/Metal' WHERE name LIKE '%iPhone%';
+UPDATE goods SET color_id = 4, size = 'Standard', brand = 'OfficeMax', material = 'Leather' WHERE name LIKE '%Chair%';

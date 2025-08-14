@@ -1,53 +1,82 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "goods_output")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString(exclude = {"goods", "staff"}) // Prevent circular references
 public class GoodsOutput {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "goods_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "goods_id", nullable = false)
     private Goods goods;
     
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
-    private LocalDateTime outputDate;
+    
+    @Column(name = "unit_price", precision = 10, scale = 2)
+    private BigDecimal unitPrice;
+    
+    @Column(name = "total_price", precision = 10, scale = 2)
+    private BigDecimal totalPrice;
+    
+    @Column(name = "customer")
     private String customer;
+    
+    @Column(name = "customer_contact")
+    private String customerContact;
+    
+    @Column(name = "invoice_number")
+    private String invoiceNumber;
+    
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+    
+    @Column(name = "notes")
     private String notes;
     
-    // Constructors
-    public GoodsOutput() {
-        this.outputDate = LocalDateTime.now();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id")
+    private Staff staff;
+    
+    @Column(name = "output_date")
+    @Builder.Default
+    private LocalDateTime outputDate = LocalDateTime.now();
+    
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
+    
+    @Column(name = "status")
+    @Builder.Default
+    private String status = "pending";
+    
+    @Column(name = "created_at")
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        if (this.outputDate == null) {
+            this.outputDate = LocalDateTime.now();
+        }
+        if (this.status == null) {
+            this.status = "pending";
+        }
+        // Auto-calculate total price
+        if (this.quantity != null && this.unitPrice != null) {
+            this.totalPrice = this.unitPrice.multiply(BigDecimal.valueOf(this.quantity));
+        }
     }
-    
-    public GoodsOutput(Goods goods, Integer quantity, String customer, String notes) {
-        this.goods = goods;
-        this.quantity = quantity;
-        this.customer = customer;
-        this.notes = notes;
-        this.outputDate = LocalDateTime.now();
-    }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public Goods getGoods() { return goods; }
-    public void setGoods(Goods goods) { this.goods = goods; }
-    
-    public Integer getQuantity() { return quantity; }
-    public void setQuantity(Integer quantity) { this.quantity = quantity; }
-    
-    public LocalDateTime getOutputDate() { return outputDate; }
-    public void setOutputDate(LocalDateTime outputDate) { this.outputDate = outputDate; }
-    
-    public String getCustomer() { return customer; }
-    public void setCustomer(String customer) { this.customer = customer; }
-    
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
 }

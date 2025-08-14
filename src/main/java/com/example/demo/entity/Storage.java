@@ -1,42 +1,44 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "storage")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Storage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "name", nullable = false)
     private String name;
+    
+    @Column(name = "location")
     private String location;
-    private String description;
-    private Integer capacity;
     
-    // Constructors
-    public Storage() {}
+    @Column(name = "capacity")
+    @Builder.Default
+    private Integer capacity = 0;
     
-    public Storage(String name, String location, String description, Integer capacity) {
-        this.name = name;
-        this.location = location;
-        this.description = description;
-        this.capacity = capacity;
+    @Column(name = "current_stock")
+    @Builder.Default
+    private Integer currentStock = 0;
+    
+    @Column(name = "created_at")
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "updated_at")
+    @Builder.Default
+    private LocalDateTime updatedAt = LocalDateTime.now();
+    
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    
-    public Integer getCapacity() { return capacity; }
-    public void setCapacity(Integer capacity) { this.capacity = capacity; }
 }
