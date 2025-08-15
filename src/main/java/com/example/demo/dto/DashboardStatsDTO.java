@@ -14,8 +14,8 @@ public class DashboardStatsDTO {
     private Long lowStockItems;
     private Long overstockItems;
     private Double totalInventoryValue;
-    private Double monthlyInput;
-    private Double monthlyOutput;
+    private float monthlyInput;
+    private float monthlyOutput;
     private String healthStatus;
     private String healthColor;
     
