@@ -6,7 +6,6 @@ A comprehensive inventory management system built with Spring Boot, PostgreSQL, 
 ![Inventory System](https://img.shields.io/badge/Spring%20Boot-3.5.4-green)
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 ## ✨ Features
 
